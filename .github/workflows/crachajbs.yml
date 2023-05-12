@@ -26,3 +26,16 @@ jobs:
     - name: Compilando Classe Teste
       run: |
             cd src && javac -cp . Teste.java
+            
+    - uses: actions/checkout@v3
+      name: Check out code
+      
+    - uses: mr-smithers-excellent/docker-build-push@v6
+      name: Build & push Docker image
+      with:
+        image: lavinia090/cracha_jbs
+        tags: 1.0, 1.1
+        registry: docker.io
+        dockerfile: dockerfile
+        username: ${{ secrets.DOCKER_USER }}
+        password:  ${{ secrets.DOCKER_PASSWORD }}
