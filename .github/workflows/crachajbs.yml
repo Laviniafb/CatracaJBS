@@ -27,9 +27,6 @@ jobs:
       run: |
             cd src && javac -cp . Teste.java
             
-    - uses: actions/checkout@v3
-      name: Check out code
-      
     - name: Generate version
       uses: mathieudutour/github-tag-action@v5
       id: semver
@@ -37,16 +34,16 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prefix: 'v'
       
+    - name: Check out code
+      uses: actions/checkout@v3
       
-    - uses: mr-smithers-excellent/docker-build-push@v6
-      name: Build & push Docker image
+    - name: Build & push Docker image
+      uses: docker/build-push-action@v2
       with:
-        image: lavinia090/cracha_jbs
-        registry: docker.io
-        dockerfile: dockerfile
-        username: ${{ secrets.DOCKER_USER }}
-        password:  ${{ secrets.DOCKER_PASSWORD }} 
         context: .
         push: true
         tags: |
           lavinia090/cracha_jbs:${{ steps.semver.outputs.version }}
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
