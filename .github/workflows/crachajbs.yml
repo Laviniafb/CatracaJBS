@@ -26,23 +26,19 @@ jobs:
         run: |
           cd src && javac -cp . Teste.java
       
-      - name: Get previous tag
-        id: previous_tag
-        run: echo ::set-output name=tag::$(git describe --abbrev=0 --tags)
+      - name: Get Git version
+        id: git_version
+        run: |
+          git_version=$(git describe --abbrev=0 --tags)
+          echo "Git version is $git_version"
+          echo ::set-env name=GIT_VERSION::$git_version
       
       - name: Generate version
+        uses: softprops/action-gh-release@v1
         id: semver
-        run: |
-          previous_tag=${{ steps.previous_tag.outputs.tag }}
-          if [[ -z "$previous_tag" ]]; then
-            echo "Previous tag not found. Setting initial version to 0.0.1."
-            echo ::set-output name=version::0.0.1
-          else
-            echo "Previous tag was $previous_tag."
-            version=$(semver bump minor $previous_tag)
-            echo "New version is $version."
-            echo ::set-output name=version::$version
-          fi
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prefix: 'v'
       
       - name: Check out code
         uses: actions/checkout@v3
@@ -57,3 +53,5 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          GIT_VERSION: ${{ env.GIT_VERSION }}
+
