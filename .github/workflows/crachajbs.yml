@@ -26,12 +26,10 @@ jobs:
         run: |
           cd src && javac -cp . Teste.java
       
-      - name: Get Git version
-        id: git_version
+      - name: Set version
+        id: set_version
         run: |
-          git_version=$(git describe --abbrev=0 --tags)
-          echo "Git version is $git_version"
-          echo ::set-env name=GIT_VERSION::$git_version
+          echo "::set-output name=version::$(date +%Y%m%d%H%M%S)"
       
       - name: Generate version
         uses: softprops/action-gh-release@v1
@@ -53,5 +51,4 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          GIT_VERSION: ${{ env.GIT_VERSION }}
-
+          VERSION: ${{ steps.set_version.outputs.version }}
