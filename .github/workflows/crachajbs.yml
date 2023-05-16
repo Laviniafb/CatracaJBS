@@ -30,12 +30,23 @@ jobs:
     - uses: actions/checkout@v3
       name: Check out code
       
+    - name: Generate version
+      uses: mathieudutour/github-tag-action@v5
+      id: semver
+      with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prefix: 'v'
+      
+      
     - uses: mr-smithers-excellent/docker-build-push@v6
       name: Build & push Docker image
       with:
         image: lavinia090/cracha_jbs
-        tags: 1.0, 1.1
         registry: docker.io
         dockerfile: dockerfile
         username: ${{ secrets.DOCKER_USER }}
-        password:  ${{ secrets.DOCKER_PASSWORD }}
+        password:  ${{ secrets.DOCKER_PASSWORD }} 
+        context: .
+        push: true
+        tags: |
+          lavinia090/cracha_jbs:${{ steps.semver.outputs.version }}
