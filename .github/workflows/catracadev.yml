@@ -32,7 +32,7 @@ jobs:
     - name: Executando o Projeto
       run: |
         cd src
-        java -cp . Teste
+        java -cp . Teste.java
           
           
     
